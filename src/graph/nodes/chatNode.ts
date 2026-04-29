@@ -7,6 +7,12 @@ import { PromptTemplate } from '@langchain/core/prompts';
 export const createChatNode = (openRouterService: OpenRouterService) => {
     return async (state: GraphState): Promise<Partial<GraphState>> => {
         try {
+            // User is always initialized by generateUserNode before reaching here
+            if (!state.user) {
+                throw new Error('User must be initialized before chat node');
+            }
+
+
             const userPrompt = state.messages?.[state.messages.length - 1]?.text || "";
             const template = PromptTemplate.fromTemplate(prompts.system);
             const systemPrompt = await template.format({ 

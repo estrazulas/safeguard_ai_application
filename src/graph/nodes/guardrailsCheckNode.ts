@@ -6,6 +6,12 @@ import { prompts } from '../../config.ts';
 export const createGuardrailsCheckNode = (openRouterService: OpenRouterService) => {
     return async (state: GraphState): Promise<Partial<GraphState>> => {
         try {
+            // Validate state.user exists (should be set by generateUserNode)
+            if (!state.user || !state.user.role || !state.user.displayName) {
+                throw new Error(
+                    `Invalid state: user must be initialized. Got: ${JSON.stringify(state.user)}`
+                );
+            }
            
             const userPrompt = state.messages.at(-1)?.text!
             const template = PromptTemplate.fromTemplate(prompts.system)
